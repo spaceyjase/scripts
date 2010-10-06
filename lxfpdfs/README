@@ -1,0 +1,20 @@
+lxfpdfs
+
+http://linuxformat.co.uk/
+
+Subscribers to the excellent Linux Format (URL above) get to grab their latest and greatest in PDF format via the website.  Back issues are also available and, for those that don't subscribe then they can get older issues too.  Amaze.
+
+However, this is just for subscribers ;)
+
+The script expects a surname and subscriber number (as it cobbles together a cookie to feed the LXF website) and then iterates through available PDFs, checks to see if they exist locally and downloads them if not.  You get lovely feedback or tons of error messages if it goes horrible wrong.
+
+Expects to find a 'downloads' directory local to the script.
+
+TODO:
+* Create the downloads directory if it doesn't exist ;)
+* Better error handling
+* Allow non-subscribers to pinch^H^H^H^H^Hdownload PDFs
+* Should probably store something in ~/.lxfpdfs rather than check local files
+  so the user can move them around, you know?
+
+Free as in beer.
