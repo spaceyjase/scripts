@@ -13,7 +13,7 @@ Expects to find a 'downloads' directory local to the script.
 TODO:
 * Create the downloads directory if it doesn't exist ;)
 * Better error handling
-* Allow non-subscribers to pinch^H^H^H^H^Hdownload PDFs
+* Allow non-subscribers to download available PDFs (those that are free to all)
 * Should probably store something in ~/.lxfpdfs rather than check local files
   so the user can move them around, you know?
 
