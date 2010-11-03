@@ -4,6 +4,6 @@ Use:
 
 python mmml.py (or ./mmml.py, after a 'chmod u+x' if you like).
 
-Why?  Because xfce is rubbish with .desktop files where it count (the panel launcher is OK though, which this is modelled on).  Give me a shout if you know different!
+Why?  Because xfce is rubbish with .desktop files where it counts (the panel launcher is OK though, which this is modelled on).  Give me a shout if you know different!
 
 Free as in beer.
