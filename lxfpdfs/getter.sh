@@ -12,10 +12,10 @@ cookie="Cookie: __utma=65394611.747858017.1258383664.1276678469.1282904913.14; _
 # pretend to be a decent browser ;)
 browser="Mozilla/7.0 (X11; U; Linux i686; en-GB; rv:1.9.2.8) Gecko/20111231 Ubuntu/11.10 (mankey monkey) Firefox/7.6.5 GTB7.1" 
 # lxf url with the archives
-url="http://linuxformat.co.uk/archives&listpdfs=1" 
+url="http://www.linuxformat.com/archives&listpdfs=1" 
 
 echo Checking PDFs at "${url}"...
-for f in `curl -s -H "${cookie}" -A "${browser}" "${url}" | grep -o -e '\/includes\/.*\?PDF=LXF[0-9]*\..*\.pdf' | sed 's/^\//http:\/\/linuxformat.co.uk\//g'`
+for f in `curl -s -H "${cookie}" -A "${browser}" "${url}" | grep -o -e '\/includes\/.*\?PDF=LXF[0-9]*\..*\.pdf' | sed 's/^\//http:\/\/linuxformat.com\//g'`
 do
     echo -n .
 	fo=`echo $f | awk -F= '{ printf "./downloads/%s", $2 }'`
