@@ -19,7 +19,6 @@ class GUI:
         "Path=${path}")
 
     def on_button_ok_clicked(self, widget):
-        print "OK clicked!"
         # get data
         entryName = self.dlg.get_widget("entryName")
         name = entryName.get_text()
