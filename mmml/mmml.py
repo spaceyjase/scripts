@@ -2,12 +2,13 @@
 
 import gtk
 import gtk.glade
-import os
+import sys
 from string import Template
 
 class GUI:
     def __init__(self):
-        self.dlg = gtk.glade.XML("menudlg.glade")
+        menu_gl = sys.path[0] + "/menudlg.glade"
+        self.dlg = gtk.glade.XML(menu_gl)
         self.dlg.signal_autoconnect(self)
         self.template = Template(
         "[Desktop Entry]\n" +
