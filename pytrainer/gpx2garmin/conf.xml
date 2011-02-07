@@ -6,7 +6,7 @@
 	extensioncode="gpx2garmin"
 	type="record" 
 	helpfile="README.txt"
-	executable="main.py"
+	executable="gpx2garmin"
 >
 <conf-values variable="gpx2garmindevice" value=""/>
 <conf-values variable="gpx2garminmaxpoints" value=""/>

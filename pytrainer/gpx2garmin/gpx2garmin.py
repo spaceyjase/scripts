@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
-from optparse import OptionParser
 import os
+import gtk
 
-class Main:
-    def __init__(self, options):
-        self.limit = options.limit
-        self.device = options.device
-        self.gpxfile = options.gpxfile
+class gpx2garmin:
+    def __init__(self, parent = None, pytrainer_main = None, conf_dir = None, options = None):
+        self.limit = options["gpx2garminmaxpoints"]
+        self.device = options["gpx2garmindevice"]
+        self.conf_dir = conf_dir
+        self.gpxfile = None
         self.tmpgpxfile = "/tmp/_gpx2garmin.gpx"
+        self.pytrainer_main = pytrainer_main
 
     def prepareGPX(self):
         # add a name to the gpx data in the <trk> stanza
@@ -22,7 +24,8 @@ class Main:
         cmd = cmd + " -F %s" % self.device
         os.system(cmd)
 
-    def run(self):
+    def run(self, id, activity=None):
+        self.gpxfile = "%s/gpx/%s.gpx" % (self.conf_dir, id)
         self.log = "Export of '%s' " % self.gpxfile
         try:
             self.prepareGPX()
@@ -30,14 +33,8 @@ class Main:
             self.log = self.log + "successful!" 
         except:
             self.log = self.log + "failed!"
-        return self.log
-
-parser = OptionParser()
-parser.add_option("-d", "--gpx2garmindevice", dest="device")
-parser.add_option("-l", "--gpx2garminmaxpoints", dest="limit")
-parser.add_option("-g", "--gpxfile", dest="gpxfile")
-parser.add_option("-i", "--idrecord", dest="idrecord")
-(options,args) =  parser.parse_args()
-
-main = Main(options)
-print main.run()
+        md = gtk.MessageDialog(self.pytrainer_main.windowmain.window1, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, self.log)
+        md.set_title(_("gpx2garmin Extension"))
+        md.set_modal(False)
+        md.run()
+        md.destroy()
