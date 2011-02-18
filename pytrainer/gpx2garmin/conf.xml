@@ -5,7 +5,7 @@
 	extensionbutton="Export to device"
 	extensioncode="gpx2garmin"
 	type="record" 
-	helpfile="README.txt"
+	helpfile="README"
 	executable="gpx2garmin"
 >
 <conf-values variable="gpx2garmindevice" value=""/>
