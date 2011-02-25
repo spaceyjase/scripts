@@ -1,0 +1,44 @@
+kmlextract
+----------
+
+Wrote with the Garmin 305 in mind, gpsbabel allows one to extract a kml file with all track information. The application presents the user with a selection of tracks (via a dialog) and produces a kml file containing just the user's selection, ready for import into Google Earth/Maps, etc...
+
+The application depends on:
+
+    * Python 2.6
+    * libxml2
+    * gpsbabel (1.4.0 used at time of writing)
+    * zenity 
+
+kmlfs
+-----
+
+kmlfs is work in progress (see below). It provides a structured entry in the file system that maps each track in the kml file (processed by gpsbabel) as shown:
+
+/
+|
+\-date
+  \-track1
+  \-track2
+\-date
+  \-track1
+  \-track2
+\-etc...
+
+Use 'kmlfs mnt' where 'mnt' is your mount point. Default behaviour is to read from your garmin device using gpsbabel (as kmlextract). If you have already done so, you can use the '-i' flag followed by the file extracted (in '/tmp') to avoid reading and reparsing your device. One may add the '-f' flag to run it in the foreground.
+
+There's some delay in initially reading a file while the parser figures out where the track is but after that repeated reads are fast.
+
+The current version works correctly. 'Work in progress' as the code depends on kmlextract and needs a good clean.
+
+tools
+-----
+
+zipkml
+
+A utility script that can be installed into ~/.gnome2/nautilus-scripts (gnome users) or configured as a custom action in Thunar (e.g. '~/kmlextract/zipkml %f'). This way the user can right-click a '.kml' file and it'll zip it up for you. Needs 'zip' and 'zenity'.
+
+future
+------
+
+I'd like it to work with garmin_tools which provides far more (complete) information than gpsbabel (like calories). I initially did this just to get the gpx track and to learn about fuse. 

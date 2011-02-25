@@ -1,0 +1,209 @@
+#!/usr/bin/env python
+
+import sys, libxml2, os, stat, tempfile
+from errno import *
+# fuse
+import fuse
+from fuse import Fuse
+fuse.fuse_python_api = (0, 2)
+# kmlcreate
+from kmlextract import KmlCreate
+from xml.sax.handler import ContentHandler
+from xml.sax import parse
+# logging
+import logging
+# process
+from subprocess import Popen, PIPE
+
+# TODO: specific log file
+logging.basicConfig(filename='/tmp/kmlfs.log', level=logging.DEBUG,)
+
+class MyStat(fuse.Stat):
+    def __init__(self):
+        self.st_mode = 0
+        self.st_ino = 0
+        self.st_dev = 0
+        self.st_nlink = 0
+        self.st_uid = 0
+        self.st_gid = 0
+        self.st_size = 0
+        self.st_atime = 0
+        self.st_mtime = 0
+        self.st_ctime = 0
+
+class App(Fuse):
+    def __init__(self, *args, **kw):
+        logging.debug('---------- New kmlfs instance started ----------') # date ;)
+        self.valid = True
+        self.file = ""
+        self.gps = "garmin"
+        self.direction = True
+        # holds path/files(...) structure
+        self.fileNames = {} 
+        # cache output strings
+        self.cache = {}
+        Fuse.__init__(self, *args, **kw)
+        # parse some command line args
+        self.parser.add_option('-i', '--input', dest = 'input', help = '.kml input to process')
+        self.parser.add_option('-D', '--direction', dest = 'direction',
+                               help = 'Include direction arrows when reading gps',
+                               default = True)
+        self.parser.add_option('-g', '--gps', dest = 'gps', 
+                               help = 'gps device',
+                               default = 'garmin')
+    def getattr(self, path):
+        logging.debug('getattr: %s' % path)
+        if (path == '/'):
+            # mount point, this is a real directory ;)
+            return os.lstat(path)
+        elif path in self.fileNames.keys(): 
+            # return 'directory' stat
+            st = MyStat()
+            st.st_mode = stat.S_IFDIR | 0444
+            st.st_nlink = 2
+            return st
+        else:
+            try:
+                # path will be '/date/filename' so split it...
+                dir = '/' + path.split('/')[1]
+                if (dir in self.fileNames.keys()):
+                    # This is a known path, just being sensible...
+                    files = self.fileNames.get(dir)
+                    fileName = path.split('/')[2]
+                    if (files is not None and fileName in files):
+                        # stat!
+                        st = MyStat()
+                        st.st_mode = stat.S_IFREG | 0444
+                        st.st_nlink = 1
+                        cachedItem = self.cache.get(path) # note full path
+                        if (cachedItem is not None):
+                            st.st_size = len(cachedItem)
+                        else:
+                            st.st_size = 0 # TODO: don't know yet!
+                        return st
+            except:
+                logging.debug("exception in getattr")
+                pass
+        # got this far then I don't know what 'path' is...
+        return -ENOENT
+    def readdir(self, path, offset):
+        logging.debug('readdir: %s' % path)
+        # system directories
+        for d in  '.', '..':
+            yield fuse.Direntry(d)
+        if path == '/':
+            # gps directories (date)
+            for d in self.fileNames.keys():
+                yield fuse.Direntry(os.path.basename(d))
+        else:
+            # individual kml files
+            if (path in self.fileNames.keys()):
+                for d in self.fileNames.get(path):
+                    yield fuse.Direntry(os.path.basename(d))
+    def open(self, path, flags):
+        logging.debug('open: %s, %s' % (path, flags))
+        known = True 
+        output = self.cache.get(path)
+        if (output is None):
+            # need to 'open' the data (i.e. create a kml file, cache it and return size)
+            # validate path (TODO: extract this into a method)
+            logging.debug('output not cached, validating path \'%s\'' % path)
+            dir = '/' + path.split('/')[1]
+            if (dir in self.fileNames.keys()):
+                # This is a known path, just being sensible...
+                files = self.fileNames.get(dir)
+                fileName = path.split('/')[2]
+                if (files is not None and fileName in files):
+                    logging.debug('valid file name %s, getting kml', fileName)
+                    # call KmlCreate to spit out some xml :)
+                    output = self.outputKml(fileName[:-4])                    
+                    # store output in cache for later processing (full path name)
+                    self.cache[path] = output
+                else:
+                    # don't know this file
+                    known = False
+            else:
+                # don't know this path
+                known = False
+        if not known:
+            return -ENOENT
+        return 0 
+    def read(self, path, length, offset):
+        logging.debug('read: %s, %s, %s' % (path, length, offset))
+        output = self.cache.get(path)
+        if (output is None):
+            return -ENOENT
+        return output[offset:offset + length]
+    def usage(self, string):
+        logging.debug('usage')
+        print "%s.  Try 'kmlfs --help for more information" % string
+    def parseData(self):
+        logging.debug('parseData')
+        try:    
+            doc = libxml2.parseFile(self.file)
+            ctxt = doc.xpathNewContext()
+            ctxt.xpathRegisterNs('x', 'http://www.opengis.net/kml/2.2')
+            tracks = ctxt.xpathEval("/x:kml/x:Document/x:Folder[x:name='Tracks']/x:Folder")
+            for track in tracks:
+                ctxt.setContextNode(track)  
+                trackName = ctxt.xpathEval("./x:name")[0].content + '.kml'
+                trackTime = ctxt.xpathEval("./x:TimeSpan/x:begin")[0].content
+                #remove T and Z from trackTime
+                trackTime = trackTime.replace('T', ' ').replace('Z', ' ')
+                dirKey = "/%s" % (trackTime.split()[0])
+                if (dirKey not in self.fileNames.keys()):
+                    # directory doesn't exist yet, add it to the dictionary
+                    self.fileNames[dirKey] = [trackName]
+                else:
+                    # get this directory...
+                    files = self.fileNames.get(dirKey)
+                    if (files != None):
+                        files.append(trackName)
+        except:
+            sys.stderr.write("Error parsing kml file.\n")
+            sys.exit(2)
+        else:
+            # free libxml (could this cause an exception?)
+            doc.freeDoc()
+            ctxt.xpathFreeContext()         
+    def outputKml(self, trackName):
+        fileName = tempfile.mktemp(suffix='.kml')
+        logging.debug('outputKml: %s' % fileName)
+        parse(self.file, KmlCreate(trackName, fileName))
+        output = ""
+        for line in open(fileName):
+            output = output + line
+        return output
+    def importGps(self):
+        logging.debug('importGps')
+        # TODO: expose kmlextract functionality 'cos this code is duplicated ;)
+        try:
+            fileName = tempfile.mktemp(suffix='.kml')
+            include_arrows = ""
+            if self.direction:
+                 include_arrows = ",trackdirection=1"
+            cmd = "gpsbabel -t -i %s -f usb: -o kml%s -F %s" % (self.gps, include_arrows, fileName)
+            logging.debug('importGps: %s' % cmd)
+            gpsbabel = Popen(cmd, shell=True)
+            gpsbabel.communicate()
+            logging.debug('importGps: gpsbabel done')
+            self.file = fileName 
+        except:
+            sys.stderr.write("Cannot import GPS data.\n")
+            sys.exit(2)
+    def run(self):
+        logging.debug('run')
+        opts, args = self.cmdline # thanks fuse :) 
+        if (opts.input == None):
+            self.importGps()
+        else:
+            self.file = opts.input
+        self.parseData()
+
+if __name__ == '__main__':
+    app = App(version="%prog " + fuse.__version__,
+                usage=Fuse.fusage,
+                dash_s_do='setsingle')
+    app.parse(errex=1)
+    app.run()
+    app.main()

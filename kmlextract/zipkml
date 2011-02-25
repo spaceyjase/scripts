@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+if [ "${1}" == "" ]; then
+	# get file via zenity
+	kml=`zenity --file-selection`
+else
+	kml=${1}
+fi
+if [ "${kml}" == "" ]; then
+	#zenity --error --text="No file specified"
+	exit 1
+fi
+fullname=${kml##*/}
+filename=${fullname%.*}
+zip ${filename}.kmz ${kml} && rm ${kml}

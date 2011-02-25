@@ -1,0 +1,194 @@
+#!/usr/bin/env python
+
+import sys, getopt, libxml2 
+# zenity control
+from subprocess import Popen, PIPE
+# kml creation
+from xml.sax.handler import ContentHandler
+from xml.sax import parse
+
+# given a file name, pull the named track
+class KmlCreate(ContentHandler):
+    def __init__(self, track, filename):
+        self.in_tracks = False
+        self.in_name = False
+        self.track = track
+        self.foundtrack = False
+        self.using_file = False
+        self.folder_level = 1
+        self.passthrough = True
+        self.name_search = False
+        if filename == "":
+            self.file = sys.stdout
+        else:
+            self.file = open(filename, "w")
+            self.using_file = True
+        self.file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    def startElement(self, name, attrs):
+        if self.in_tracks and self.passthrough and name == "name":
+            self.in_name = True
+            self.file.write('<name>')
+            self.name_search = True
+            # stop writing until a match is found
+            self.passthrough = False
+        elif self.foundtrack and name == "Folder":
+            self.folder_level += 1
+        elif self.name_search and name == "name":
+            self.in_name = True
+                
+        if self.passthrough:
+            # just write out what we have
+            self.file.write('<' + name)
+            for key, val in attrs.items():
+                self.file.write(' %s="%s"' % (key, val))
+            self.file.write('>')
+            if name == "description":
+                self.file.write('<![CDATA[')
+    def characters(self, string):
+        if string == "Tracks":
+            self.in_tracks = True
+        elif self.in_name and string == self.track:
+            self.passthrough = True
+            self.foundtrack = True
+            self.in_tracks = False
+            self.name_search = False
+
+        if self.passthrough:
+            # write the string
+            self.file.write(string)
+    def endElement(self, name):
+        if self.in_tracks and self.passthrough == False and name == "name":
+            self.in_name = False
+        if self.foundtrack and self.passthrough and name == "Folder":
+            self.folder_level -= 1
+            if self.folder_level == 0:
+                self.passthrough = False
+                # done, write end tags...
+                self.file.write("</Folder>\n    </Folder>\n  </Document>\n</kml>")
+                if self.using_file:
+                    self.file.close()
+
+        if self.passthrough:
+            if name == "description":
+                self.file.write(']]>')
+            # write end tag
+            self.file.write("</%s>" % name)
+
+class App:
+    def __init__(self):
+        self.file = ""
+        self.output = ""
+        self.gps = "garmin"
+        self.valid = True
+        self.direction = False
+        self.zip = False
+    def usage(self):
+        print "Try 'kmlextract --help for more information"
+    def noargument(self):
+        print "Extract a user-defined track from a kml file."
+        print "-h, --help prints this information"
+        print "-f, --file= the kml file to process (otherwise it attempts to use --gps)"
+        print "-o, --output= the kml file to output (default stdout)"
+        print "-z, --zip use with '-o', attempt to zip the file using 'zip' to produce .kmz"
+        print "      note: the archive MUST have a file with a .kml extension so remember"
+        print "            that when specifying an output file name ;)"
+        print "-g, --gps= the GPS device to extract from, e.g. garmin (default)"
+        print "-d, --direction include direction arrows on waypoints if gps (default none)"
+    def importGps(self):
+        try:
+            include_arrows = ""
+            if self.direction:
+                 include_arrows = ",trackdirection=1"
+            cmd = "gpsbabel -t -i %s -f usb: -o kml%s -F /tmp/output.kml" % (self.gps, include_arrows)
+            gpsbabel = Popen(cmd, shell=True)
+            gpsbabel.communicate()
+            self.file = "/tmp/output.kml"
+        except:
+            sys.stderr.write("Cannot import GPS data.\n")
+            sys.exit(2)
+    def getChoice(self):
+            try:    
+                doc = libxml2.parseFile(self.file)
+                ctxt = doc.xpathNewContext()
+                ctxt.xpathRegisterNs('x', 'http://www.opengis.net/kml/2.2')
+                tracks = ctxt.xpathEval("/x:kml/x:Document/x:Folder[x:name='Tracks']/x:Folder")
+                names = []
+                for track in tracks:
+                    ctxt.setContextNode(track)  
+                    trackName = ctxt.xpathEval("./x:name")[0].content
+                    trackTime = ctxt.xpathEval("./x:TimeSpan/x:begin")[0].content
+                    #remove T and Z from trackTime
+                    trackTime = trackTime.replace('T', ' ').replace('Z', ' ')
+                    names.append("%s - %s" % (trackName, trackTime))
+            except:
+                sys.stderr.write("Error parsing kml file.\n")
+                sys.exit(2)
+            else:
+                # free libxml (could this cause an exception?)
+                doc.freeDoc()
+                ctxt.xpathFreeContext()         
+            cmd = "zenity --title='Choose a track' --list --radiolist --column='' --column='Track'"
+            option = ""
+            first = True 
+            for name in names:
+                if first == True:
+                    option = option + " TRUE '" + name + "'"
+                    first = False
+                else:
+                    option = option + " FALSE '" + name + "'"
+            zenity = Popen(cmd + option, shell=True, stdout=PIPE)
+            # return just the track name, if available
+            result = zenity.communicate()[0]
+            if result == "":
+                 # Cancelled
+                 sys.exit()
+            return result.split()[0]
+    def zipOutput(self):
+        try:
+            filename = self.output
+            if ".kml" in self.output[-4:]:
+                filename = self.output[:-4] 
+            cmd = "zip -q9m %s.kmz %s" % (filename, self.output)
+            zip = Popen(cmd, shell=True, stdout=PIPE)
+            zip.wait()
+        except:
+            sys.stderr("zip failed, are you missing 'zip'?\n")
+            sys.exit(2)
+    def run(self):
+        try:
+            opts, args = getopt.getopt(sys.argv[1:], "dhzf:g:o:", ["direction", "help", "zip", "file=", "gps=", "output="])
+        except getopt.GetoptError, err:
+            sys.stderr.write(str(err) + "\n")
+            self.usage()
+            sys.exit(2)
+
+        for o, a in opts:
+            if o in("-h", "--help"):
+                self.noargument()
+                self.valid = False
+            elif o in ("-f", "--file"):
+                self.file = a
+            elif o in ("-z", "--zip"):
+                self.zip = True
+            elif o in ("-o", "--output"):
+                self.output = a
+            elif o in ("-g", "--gps"):
+                self.gps = a
+            elif o in ("-d", "--direction"):
+                 self.direction = True
+            else:
+                 sys.stderr.write("Invalid option specified\n")
+                 sys.exit(2)
+
+        if self.valid == True:
+            if self.file == "":
+                # use gpsbabel to create a kml file
+                self.importGps()
+
+            parse(self.file, KmlCreate(self.getChoice(), self.output))
+            if self.output is not "" and self.zip:
+                self.zipOutput()
+
+if __name__ == '__main__':
+    app = App()
+    app.run()
