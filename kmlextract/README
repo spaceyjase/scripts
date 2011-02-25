@@ -29,7 +29,7 @@ Use 'kmlfs mnt' where 'mnt' is your mount point. Default behaviour is to read fr
 
 There's some delay in initially reading a file while the parser figures out where the track is but after that repeated reads are fast.
 
-The current version works correctly. 'Work in progress' as the code depends on kmlextract and needs a good clean.  I only wrote it to play with fuse.
+The current version works correctly. 'Work in progress' as the code depends on kmlextract and needs a good clean.
 
 tools
 -----
