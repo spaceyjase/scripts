@@ -17,4 +17,7 @@ TODO:
 * Should probably store something in ~/.lxfpdfs rather than check local files
   so the user can move them around, you know?
 
+DONE:
+* Script groups issue PDFs into directories based off the name, e.g. LXF146/*.pdf.  If you've used a previous version, run 'movepdfs.sh' from the download directory to move 'em all into the right location so the script doesn't break (mostly!).
+
 Free as in beer.
