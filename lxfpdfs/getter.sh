@@ -20,12 +20,12 @@ echo Checking PDFs at "${url}"...
 for f in `curl -s -H "${cookie}" -A "${browser}" "${url}" | grep -o -e '\/includes\/.*\?PDF=LXF[0-9]*\..*\.pdf' | sed 's/^\//http:\/\/linuxformat.com\//g'`
 do
     echo -n .
-	fo=`echo $f | awk -F= '{ printf "%s", $2 }'`
+    fo=`echo $f | awk -F= '{ printf "%s", $2 }'`
     filename=`echo $fo | awk -F. '{ printf "./downloads/%s/%s", $1, $0 }'`
-	if [ ! -f $filename ]; then
+    if [ ! -f $filename ]; then
         echo 
-		echo Downloading: $f
-		curl --create-dirs -# -H "${cookie}" -A "${browser}" $f -o $filename
+        echo Downloading: $f
+        curl --create-dirs -# -H "${cookie}" -A "${browser}" $f -o $filename
         counter=30
         while [ $counter -gt 0 ]
         do
@@ -34,7 +34,7 @@ do
             sleep 1
         done
         echo
-	fi
+    fi
 done
 # put the prompt on a new line ;)
 echo
