@@ -8,7 +8,14 @@ However, this is just for subscribers ;)
 
 The script expects a surname and subscriber number (as it cobbles together a cookie to feed the LXF website) and then iterates through available PDFs, checks to see if they exist locally and downloads them if not.  You get lovely feedback or tons of error messages if it goes horrible wrong.
 
-Expects to find a 'downloads' directory local to the script.
+The script expects to find a 'downloads' directory local to the script (it doesn't create one).
+
+Combining PDFs:
+Check your repo for 'pdftk'.  Install it and change the working directory to an issue's PDFs.  Run the following command:
+
+    pdftk *.pdf cat output LXF147.pdf
+
+The combined output is put into LXF147.pdf.  It isn't ordered but as each file contains an article, it can be read properly!
 
 TODO:
 * Create the downloads directory if it doesn't exist ;)
@@ -18,6 +25,6 @@ TODO:
   so the user can move them around, you know?
 
 DONE:
-* Script groups issue PDFs into directories based off the name, e.g. LXF146/*.pdf.  If you've used a previous version, run 'movepdfs.sh' from the download directory to move 'em all into the right location so the script doesn't break (mostly!).
+* Script groups issue PDFs into directories based off the name, e.g. LXF146/*.pdf.  If you've used a previous version, run 'movepdfs.sh' from the download directory to move 'em all into the right location so the script doesn't break (mostly!).  The 'movepdfs.sh' script was a quick hack.
 
 Free as in beer.
