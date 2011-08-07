@@ -2,7 +2,7 @@
 
 import gtk
 import gtk.glade
-import sys
+import sys, os
 from string import Template
 
 class GUI:
