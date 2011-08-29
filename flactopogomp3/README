@@ -1,5 +1,0 @@
-Convert flac to a decent (ish) mp3 version for streaming on a pogoplug (because it doesn't do flac via the clients!).  Retains original tags from the flac version.  Creates the original path on the mounted file system.
-
-Handy little script, doesn't necessarily have to be used in conjunction with a pogoplug ;)
-
-Searches from the current directory so make sure the current working directory is somewhere sensible.
