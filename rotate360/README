@@ -1,0 +1,7 @@
+Silly little script to take an image and produce 360 images, one for each degree of rotation.  It keeps the same image dimensions as the original so may crop some of the rotated image.  It names the file 000 to 359 and keeps the original image extension.
+
+Relies on Imagemagick to do the work.  Combining the images can be done via montage:
+
+montage `ls ???.png | sort` -geometry 64x64\>+0+0 montage.png
+
+...which will produce a sprite containing 360 64x64 images in montage.png.  Take a look at the example image to see what I mean.
