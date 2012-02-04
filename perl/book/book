@@ -1,0 +1,24 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use 5.010;
+use Book;
+use Net::Amazon;
+use DateTime;
+
+my %command = (
+    add => \&add,
+    list => \&list,
+    start => \&start,
+    end => \&end
+);
+
+my $what = shift || 'list';
+if (exists $command{$what}) {
+    $command{$what}->(@ARGV);
+} else {
+    die "Invalid command: $what\n";
+}
+
+
