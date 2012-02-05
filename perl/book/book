@@ -31,6 +31,7 @@ sub list {
     my $books_rs = $schema->resultset('Book');
     
     # books that have been started (reading)
+    say "Reading:\n";
     foreach ($books_rs->search({
         started => { '!=', undef },
         ended => undef,
@@ -39,6 +40,7 @@ sub list {
     }
 
     # books that have been started (reading)
+    say "To Read:\n";
     foreach ($books_rs->search({
         ended => { '!=', undef }
     })) {
@@ -46,6 +48,7 @@ sub list {
     }
 
     # books still to be read
+    say "Read:\n";
     foreach ($books_rs->search({
         started => undef,
     })) {
@@ -94,4 +97,38 @@ sub add {
     say "Added $title ($author_name)";
 
     return;
+}
+
+sub start {
+    my $schema = get_schema();
+    my $books_rs = $schema->resultset('Book');
+    my $isbn = shift || die "No ISBN to start.\n";
+
+    my ($book) = $books_rs->search({ isbn => $isbn });
+
+    unless ($book) {
+        die "ISBN $isbn not found in db.\n";
+    }
+
+    $book->started(DateTime->now);
+    $book->update;
+
+    say 'Started to read ', $book->title;
+}
+
+sub end {
+    my $schema = get_schema();
+    my $books_rs = $schema->resultset('Book');
+    my $isbn = shift || die "No ISBN to end.\n";
+
+    my ($book) = $books_rs->search({ isbn => $isbn });
+
+    unless ($book) {
+        die "ISBN $isbn not found in db.\n";
+    }
+
+    $book->ended(DateTime->now);
+    $book->update;
+
+    say "Finished ", $book->title;
 }
