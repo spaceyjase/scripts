@@ -21,4 +21,50 @@ if (exists $command{$what}) {
     die "Invalid command: $what\n";
 }
 
+sub get_schema {
+    return Book->connect('dbi:mysql:database=books', 'books', 'README')
+        or die "Cannot connect to database!\n";
+}
 
+sub add {
+    my $isbn = shift || die "No ISBN to add.\n";
+    my $schema = get_schema();
+    my $books_rs = $schema->resultset('Book');
+
+    if ($books_rs->search({ isbn => $isbn })->count) {
+        warn "ISBN $isbn already exists in the db.\n";
+        return;
+    }
+
+    my $amz = Net::Amazon->new(
+        token => $ENV{AMAZON_KEY},
+        secret_key => $ENV{AMAZON_SECRET},
+        associate_tag => "helloworld",
+        locale => 'uk'
+    ) or die "Cannot connect to Amazon.\n";
+
+    my $resp = $amz->search(asin => $isbn);
+
+    unless ($resp->is_success) {
+        say 'Error: ', $resp->message;
+        return;
+    }
+
+    my $book = $resp->properties;
+    my $title = $book->ProductName;
+    my $author_name = ($book->authors)[0];
+    my $imgurl = $book->ImageUrlMedium;
+    my $author = $schema->resultset('Author')->find_or_create({
+        name => $author_name,
+    });
+
+    $author->add_to_books({
+        isbn => $isbn,
+        title => $title,
+        image_url => $imgurl
+    });
+
+    say "Added $title ($author_name)";
+
+    return;
+}
