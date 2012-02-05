@@ -26,6 +26,33 @@ sub get_schema {
         or die "Cannot connect to database!\n";
 }
 
+sub list {
+    my $schema = get_schema();
+    my $books_rs = $schema->resultset('Book');
+    
+    # books that have been started (reading)
+    foreach ($books_rs->search({
+        started => { '!=', undef },
+        ended => undef,
+    })) {
+        say ' * ', $_->title, ' (', $_->author->name, ')';
+    }
+
+    # books that have been started (reading)
+    foreach ($books_rs->search({
+        ended => { '!=', undef }
+    })) {
+        say ' * ', $_->title, ' (', $_->author->name, ')';
+    }
+
+    # books still to be read
+    foreach ($books_rs->search({
+        started => undef,
+    })) {
+        say ' * ', $_->title, ' (', $_->author->name, ')';
+    }
+}
+
 sub add {
     my $isbn = shift || die "No ISBN to add.\n";
     my $schema = get_schema();
