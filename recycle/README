@@ -1,0 +1,19 @@
+This one is probably a bit niche but you never know...
+
+My local council uses Recycle Bank to encourage residents to recycle.  Curb-side recycling is a bit half-baked though and users must log in to the website and hit a button (just like a trained monkey!) to tell Recycle Bank that they have recycled that week.  Folks forget, can't be bothered or just don't care.
+
+Oh well!
+
+Rather than log in each week and hit a button, I think I'd rather have the computer do it for me.  If you're like minded, grab the script and stick a line in your crontab:
+
+  00 09 * * wed /path/to/script/recycle.sh your.email@address.com password >/tmp/recycle.log 2>&1
+
+This runs at 0900 on Wednesday.  Change it as you see fit (everyday is fine; you might even get a few sneaky points this way!).
+
+Output is from the curl commands, both a bit of JSON.  The second one should read:
+
+  {"result":"success"}
+
+If you have already recycled then it will return "error".  Anything else and it is probably broken :)  Nothing more, nothing less.
+
+Free as in beer.
