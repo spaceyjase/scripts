@@ -3,7 +3,7 @@
 // License: MIT
 // Maintainer: Jason Adams <julietmikealpha@gmail.com>
 // Usage: Use :ig 
-// Usage: if successfully you'll be at your iGoogle page ;) 
+// Usage: if successful you'll be at your iGoogle page ;) 
 
 commands.addUserCommand(['ig'], "Navigate to your iGoogle page",
 						function(args) {
