@@ -17,6 +17,13 @@ Check your repo for 'pdftk'.  Install it and change the working directory to an 
 
 The combined output is put into LXF147.pdf.  It isn't ordered but as each file contains an article, it can be read properly!
 
+Search PDFs:
+There's a search script that's a bit slow but will usually find what you're after:
+
+    searchpdfs iPhone
+
+...will search all PDFs for the search term 'iPhone'.
+
 TODO:
 * Create the downloads directory if it doesn't exist ;)
 * Better error handling
