@@ -8,5 +8,5 @@ fi
 
 searchterm=$1
 export searchterm
-find -L . -name "*.pdf" -print0 | xargs -P 10 -0 -I{} bash -c 'pdftotext -q {} - | grep --label={} -H ${searchterm}'
+find -L . -name "*.pdf" -print0 | xargs -P 10 -0 -I{} bash -c 'pdftotext -q {} - | grep --color --label={} -H ${searchterm}'
 
