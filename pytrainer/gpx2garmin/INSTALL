@@ -1,4 +1,0 @@
-Copy the files to '/usr/share/pytrainer/extensions/gpx2garmin' or '/usr/local/share/...' (or to the extension directory if located somewhere else). Start pytrainer, click 'Tools->Extensions' and enable the extension. 
-
-Enter the device (e.g. usb:).
-Enter the maximum track points for your device (e.g. eTrex Legend HCx is 500); check your device's manual.
