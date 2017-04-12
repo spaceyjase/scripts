@@ -29,7 +29,9 @@ else:
         comments_replied_to = comments_replied_to.split("\n")
         comments_replied_to = list(filter(None, comments_replied_to))
 
-for submission in subreddit.new(limit=10):
+print("Fetching posts...")
+
+for submission in subreddit.hot(limit=10):
     if submission.id not in posts_replied_to:
         if re.search("what is the rr", submission.selftext, re.IGNORECASE) or re.search("what's the rr", submission.selftext, re.IGNORECASE):
             # reply to post
@@ -55,3 +57,4 @@ with open(comment_store, "w") as f:
     for comment_id in comments_replied_to:
         f.write(comment_id + "\n")
 
+print("Finished!")
