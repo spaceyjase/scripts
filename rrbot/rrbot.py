@@ -8,6 +8,8 @@ reddit = praw.Reddit('rrbot')
 
 subreddit = reddit.subreddit("bodyweightfitness")
 
+what_regex = "w[h]?at('s| is) the rr"
+
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
 
@@ -33,7 +35,7 @@ print("Fetching posts...")
 
 for submission in subreddit.hot(limit=10):
     if submission.id not in posts_replied_to:
-        if re.search("what is the rr", submission.selftext, re.IGNORECASE) or re.search("what's the rr", submission.selftext, re.IGNORECASE):
+        if re.search(what_regex, submission.selftext, re.IGNORECASE):
             # reply to post
             submission.reply(reply_text)
             print("Match found, rrbot replying to: [", submission.title)
@@ -43,7 +45,7 @@ for submission in subreddit.hot(limit=10):
         for comment in submission.comments.list():
             if comment.id not in comments_replied_to:
                 # print("\tcomment: [" + comment.id + "]")
-                if re.search("what is the rr", comment.body, re.IGNORECASE) or re.search("what's the rr", comment.body, re.IGNORECASE):
+                if re.search(what_regex, comment.body, re.IGNORECASE):
                     print("\tMatch found, replying to [" + comment.id + "]")
                     comment.reply(reply_text)
                     comments_replied_to.append(comment.id)
