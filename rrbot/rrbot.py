@@ -43,7 +43,7 @@ for submission in subreddit.hot(limit=10):
             posts_replied_to.append(submission.id)
         # also search comments
         for comment in submission.comments.list():
-            if comment.id not in comments_replied_to:
+            if comment.id not in comments_replied_to and hasattr(comment, 'body'):
                 # print("\tcomment: [" + comment.id + "]")
                 if re.search(what_regex, comment.body, re.IGNORECASE):
                     print("\tMatch found, replying to [" + comment.id + "]")
