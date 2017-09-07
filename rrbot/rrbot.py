@@ -8,7 +8,7 @@ reddit = praw.Reddit('rrbot')
 
 subreddit = reddit.subreddit("bodyweightfitness")
 
-what_regex = "w[h]?at('s| is) the rr|where do i find the acronyms\?"
+what_regex = "w[h]?at('s| is) (the rr|rr)|where do i find the acronyms\?"
 
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
