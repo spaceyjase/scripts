@@ -13,7 +13,7 @@ what_regex = "w[h]?at('s| is| does) (the rr|rr)( mean| stand for)?\?|where do i 
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
 
-reply_text = "The RR is the [Recommended Routine](https://www.reddit.com/r/bodyweightfitness/wiki/kb/recommended_routine) (I am a bot, flex-beep-boop) ^[(PM)](https://www.reddit.com/message/compose?to=spaceyjase)."
+reply_text = "The RR is the [Recommended Routine](https://www.reddit.com/r/bodyweightfitness/wiki/kb/recommended_routine).\n*****\n^(I am a bot, flex-beep-boop) ^| ^[(author)](https://www.reddit.com/message/compose?to=spaceyjase)"
 
 if not os.path.isfile(post_store):
     posts_replied_to = []
