@@ -55,7 +55,7 @@ comments_replied_to = read_store(comment_store)
 inbox_replied_to = read_store(inbox_store)
 
 print("Fetching posts...")
-for submission in subreddit.hot(limit=10):
+for submission in subreddit.hot(limit=20):
     if submission.id not in posts_replied_to:
         if re.search(what_regex, submission.selftext, re.IGNORECASE):
             # reply to post
