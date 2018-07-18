@@ -31,7 +31,7 @@ quotes = [
     ]
 inbox_reply = "Thanks, and remember: "
 
-reply_text = "The RR is the [Recommended Routine](https://www.reddit.com/r/bodyweightfitness/wiki/kb/recommended_routine).\n*****\n^(I am a bot, flex-beep-boop) ^| ^[(author)](https://www.reddit.com/message/compose?to=spaceyjase)"
+reply_text = "The RR is the [Recommended Routine](https://www.reddit.com/r/bodyweightfitness/wiki/kb/recommended_routine).\n*****\n^(I am a bot, flex-beep-boop)"
 
 # read comment store
 def read_store(store):
