@@ -10,7 +10,7 @@ reddit = praw.Reddit('rrbot')
 subreddit = reddit.subreddit("bodyweightfitness")
 
 good_bot = "good bot"
-what_regex = "^rr\?$|w[h]?at('s| is| does)? (the rr|rr)( mean| stand for)?\??|where do i find the acronyms\?"
+what_regex = "^rr\?$|^w[h]?at('s| is)? (the rr|rr)$|w[h]?at('s| is| does)? (the rr|rr)( mean| stand for)?[\?\.]|where do i find the acronyms\?"
 
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
