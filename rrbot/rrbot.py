@@ -10,7 +10,7 @@ reddit = praw.Reddit('rrbot')
 subreddit = reddit.subreddit("bodyweightfitness")
 
 good_bot = "good bot"
-what_regex = "^rr\?$|^(w[h]?at|wtf)('s| is| does)? (a[n]? rr|the rr|rr)( mean| stand for)?[\?\.]?$|(?<!\")(w[h]?at|wtf)('s| is| does)? (a[n]? rr|the rr|rr)( mean| stand for)?[\?\.]?(?!\")|define rr[\?\.]?"
+what_regex = "^rr\?$|^(w[h]?at|wtf)('s| is| does)? (a[n]? rr|the rr|rr)( mean| stand for)?[\?\.]?$|(?<!\")(?<!is )(w[h]?at|wtf)('s| is| does)? (a[n]? rr|the rr|rr)( mean| stand for)?(?!outine| recommends| was| stands| says)[\?\.]?(?!\")|define rr[\?\.]?"
 
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
