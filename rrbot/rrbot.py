@@ -24,6 +24,7 @@ quotes = [
         "Workout, eat well and be patient. Your body will reward you.",
         "I'm the bot doing calisthenics. I'm doing handstands and deep step ups. I work out like a British person.",
         "When I can, I do an hour of calisthenics every day.",
+        "the RR looks different from how I remember, but I can't quite place my finger on it...",
         "The best motivation is self-motivation.",
         "I'm not here to talk.",
         "I had the goal to be the best from day one.",
@@ -55,7 +56,7 @@ comments_replied_to = read_store(comment_store)
 inbox_replied_to = read_store(inbox_store)
 
 print("Fetching posts...")
-for submission in subreddit.hot(limit=20):
+for submission in subreddit.hot(limit=10):
     if submission.id not in posts_replied_to:
         if re.search(what_regex, submission.selftext, re.IGNORECASE):
             # reply to post
@@ -66,7 +67,6 @@ for submission in subreddit.hot(limit=20):
         # also search comments
         for comment in submission.comments.list():
             if comment.id not in comments_replied_to and hasattr(comment, 'body'):
-                # print("\tcomment: [" + comment.id + "]")
                 if re.search(what_regex, comment.body, re.IGNORECASE):
                     print("\tMatch found, replying to [" + comment.id + "]")
                     comment.reply(reply_text)
@@ -80,7 +80,7 @@ for comment in reddit.inbox.comment_replies():
             # reply to this comment, if it's a 'good bot'-style post
             comment.reply(inbox_reply + random.choice(quotes))
             inbox_replied_to.append(comment.id);
-    comment.mark_read()
+        comment.mark_read()
 
 # write updated lists back to the file
 print("Writing lists back to store")
