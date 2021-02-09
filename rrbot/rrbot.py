@@ -36,12 +36,14 @@ reply_text = "The RR is the [Recommended Routine](https://www.reddit.com/r/bodyw
 
 # read comment store
 def read_store(store):
-    data = []
+    data = {}
     if os.path.isfile(store):
+        tmp = []
         with open(store, "r") as f:
-            data = f.read()
-            data = data.split("\n")
-            data = list(filter(None, data))
+            tmp = f.read()
+            for s in tmp.split("\n"):
+                if s.strip():
+                  data[s] = s
     return data
 
 # write replied to data to store
@@ -63,14 +65,14 @@ for submission in subreddit.hot(limit=10):
             print("Match found, rrbot replying to: [", submission.title)
             submission.reply(reply_text)
             # store the submission id into our list
-            posts_replied_to.append(submission.id)
+            posts_replied_to[submission.id] = submission.id
         # also search comments
         for comment in submission.comments.list():
             if comment.id not in comments_replied_to and hasattr(comment, 'body'):
                 if re.search(what_regex, comment.body, re.IGNORECASE):
                     print("\tMatch found, replying to [" + comment.id + "]")
                     comment.reply(reply_text)
-                    comments_replied_to.append(comment.id)
+                    comments_replied_to[comment.id] = comment.id
 
 # inbox replies - because people are nice
 print("Processing inbox replies")
@@ -79,7 +81,7 @@ for comment in reddit.inbox.comment_replies():
         if good_bot in comment.body.lower():
             # reply to this comment, if it's a 'good bot'-style post
             comment.reply(inbox_reply + random.choice(quotes))
-            inbox_replied_to.append(comment.id);
+            inbox_replied_to[comment.id] = comment.id;
         comment.mark_read()
 
 # write updated lists back to the file
