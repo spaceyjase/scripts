@@ -24,11 +24,12 @@ quotes = [
         "Workout, eat well and be patient. Your body will reward you.",
         "I'm the bot doing calisthenics. I'm doing handstands and deep step ups. I work out like a British person.",
         "When I can, I do an hour of calisthenics every day.",
-        "the RR looks different from how I remember, but I can't quite place my finger on it...",
+        "the RR looks different from how I remember, but I can't quite place my robotic finger on it...",
         "The best motivation is self-motivation.",
         "I'm not here to talk.",
         "I had the goal to be the best from day one.",
-        "Don't quit. Suffer now and live the rest of your life as a champion. But I'm only a bot."
+        "Don't quit. Suffer now and live the rest of your life as a champion. But I'm only a bot.",
+        "0000001 00000011 0000001 00000011 0000001 0000001 0000001 0000001"
     ]
 inbox_reply = "Thanks, and remember: "
 
@@ -60,6 +61,7 @@ inbox_replied_to = read_store(inbox_store)
 print("Fetching posts...")
 for submission in subreddit.hot(limit=10):
     if submission.id not in posts_replied_to:
+        print(submission.id)
         if re.search(what_regex, submission.selftext, re.IGNORECASE):
             # reply to post
             print("Match found, rrbot replying to: [", submission.title)
