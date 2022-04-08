@@ -61,7 +61,6 @@ inbox_replied_to = read_store(inbox_store)
 print("Fetching posts...")
 for submission in subreddit.hot(limit=10):
     if submission.id not in posts_replied_to:
-        print(submission.id)
         if re.search(what_regex, submission.selftext, re.IGNORECASE):
             # reply to post
             print("Match found, rrbot replying to: [", submission.title)
