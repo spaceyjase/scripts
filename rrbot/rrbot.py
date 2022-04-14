@@ -10,7 +10,7 @@ reddit = praw.Reddit('rrbot')
 subreddit = reddit.subreddit("bodyweightfitness")
 
 good_bot = "good bot"
-what_regex = "^rr\?$|^(w[h]?at|wtf)('s| is| does)? (a[n]? rr|the rr|rr)( mean| stand for| and where do i find it)?[\?\.]?$|(?<!\")(?<! is |did )(w[h]?at|wtf)('s| is| does)? (a[n]? rr|the rr|rr)( mean| stand for| and where do i find it)?(?!outine| \w)[\?\.]?(?!\")|define rr[\?\.]?"
+what_regex = r"^rr\?$|^(wh?at|wtf)([\u2019`']?s| is| does)? (an? rr|the rr|rr)( mean| stand for| and where do i find it)?[\?\.]?$|(?<!\")(?<! is |did )(wh?at|wtf)([\u2019`']?s| is| does)? (an? rr|the rr|rr)( mean| stand for| and where do i find it)?(?!outine| \w)[\?\.]?(?!\")|define rr[\?\.]?"
 
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
@@ -53,42 +53,43 @@ def write_store(store, replied_to):
         for store_id in replied_to:
             f.write(store_id + "\n")
 
-print("Reading comment caches...")
-posts_replied_to = read_store(post_store)
-comments_replied_to = read_store(comment_store)
-inbox_replied_to = read_store(inbox_store)
+if __name__ == '__main__':
+  print("Reading comment caches...")
+  posts_replied_to = read_store(post_store)
+  comments_replied_to = read_store(comment_store)
+  inbox_replied_to = read_store(inbox_store)
 
-print("Fetching posts...")
-for submission in subreddit.hot(limit=10):
-    if submission.id not in posts_replied_to:
-        if re.search(what_regex, submission.selftext, re.IGNORECASE):
-            # reply to post
-            print("Match found, rrbot replying to: [", submission.title)
-            submission.reply(reply_text)
-            # store the submission id into our list
-            posts_replied_to[submission.id] = submission.id
-        # also search comments
-        for comment in submission.comments.list():
-            if comment.id not in comments_replied_to and hasattr(comment, 'body'):
-                if re.search(what_regex, comment.body, re.IGNORECASE):
-                    print("\tMatch found, replying to [" + comment.id + "]")
-                    comment.reply(reply_text)
-                    comments_replied_to[comment.id] = comment.id
+  print("Fetching posts...")
+  for submission in subreddit.hot(limit=10):
+      if submission.id not in posts_replied_to:
+          if re.search(what_regex, submission.selftext, re.IGNORECASE):
+              # reply to post
+              print("Match found, rrbot replying to: [", submission.title)
+              submission.reply(reply_text)
+              # store the submission id into our list
+              posts_replied_to[submission.id] = submission.id
+          # also search comments
+          for comment in submission.comments.list():
+              if comment.id not in comments_replied_to and hasattr(comment, 'body'):
+                  if re.search(what_regex, comment.body, re.IGNORECASE):
+                      print("\tMatch found, replying to [" + comment.id + "]")
+                      comment.reply(reply_text)
+                      comments_replied_to[comment.id] = comment.id
 
-# inbox replies - because people are nice
-print("Processing inbox replies")
-for comment in reddit.inbox.comment_replies():
-    if comment.new and comment.id not in inbox_replied_to:
-        if good_bot in comment.body.lower():
-            # reply to this comment, if it's a 'good bot'-style post
-            comment.reply(inbox_reply + random.choice(quotes))
-            inbox_replied_to[comment.id] = comment.id;
-        comment.mark_read()
+  # inbox replies - because people are nice
+  print("Processing inbox replies")
+  for comment in reddit.inbox.comment_replies():
+      if comment.new and comment.id not in inbox_replied_to:
+          if good_bot in comment.body.lower():
+              # reply to this comment, if it's a 'good bot'-style post
+              comment.reply(inbox_reply + random.choice(quotes))
+              inbox_replied_to[comment.id] = comment.id;
+          comment.mark_read()
 
-# write updated lists back to the file
-print("Writing lists back to store")
-write_store(post_store, posts_replied_to)
-write_store(comment_store, comments_replied_to)
-write_store(inbox_store, inbox_replied_to)
+  # write updated lists back to the file
+  print("Writing lists back to store")
+  write_store(post_store, posts_replied_to)
+  write_store(comment_store, comments_replied_to)
+  write_store(inbox_store, inbox_replied_to)
 
-print("Finished!")
+  print("Finished!")
