@@ -4,13 +4,13 @@ import pdb
 import re
 import os
 import random
+from rrbot_regex import what_regex 
 
 reddit = praw.Reddit('rrbot')
 
 subreddit = reddit.subreddit("bodyweightfitness")
 
 good_bot = "good bot"
-what_regex = r"^rr\?$|^(wh?at|wtf)([\u2019`']?s| is| does)? (an? rr|the rr|rr)( mean| stand for| and where do i find it)?[\?\.]?$|(?<!\")(?<! is |did )(wh?at|wtf)([\u2019`']?s| is| does)? (an? rr|the rr|rr)( mean| stand for| and where do i find it)?(?!outine| \w)[\?\.]?(?!\")|define rr[\?\.]?"
 
 post_store = "posts_replied_to.txt"
 comment_store = "comments_replied_to.txt"
