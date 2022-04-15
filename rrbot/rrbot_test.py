@@ -52,22 +52,22 @@ class TestRegex(unittest.TestCase):
     def test_regex_match_what_s_the_rr_quoted(self):
        query = '"what''s the rr?"'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_what_s_the_rr_quoted_text(self):
        query = 'Sarcasm, "What''s the rr?" folks snafu.'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_what_s_the_rr_quoted_text_case(self):
        query = '"What''s the RR?"'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_what_s_the_rr_quoted_text_no_match(self):
        query = 'When somebody asks, "What is the RR?".'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_what_is_the_rr_and_match(self):
        query = "I'm new to this sub and I would like to ask for some help: What is the RR and where do I find it? ^"
@@ -112,12 +112,12 @@ class TestRegex(unittest.TestCase):
     def test_regex_match_quote_rr_quote_no_match(self):
        query = '"rr?"'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_text_what_the_rr_no_match(self):
        query = "I tried to decipher what the RR was asking me to do in a workout..."
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_text_what_does_the_rr_match(self):
        query = "what does the rr?"
@@ -157,7 +157,7 @@ class TestRegex(unittest.TestCase):
     def test_regex_match_text_no_match(self):
        query = "define nothing rr    ggsddg"
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_odd_quote_text_match(self):
        query = "what`s the rr?"
@@ -167,7 +167,7 @@ class TestRegex(unittest.TestCase):
     def test_regex_match_odd_quote_text_no_match(self):
        query = '"what`s the rr?"'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
     def test_regex_match_unicode_from_test_sub(self):
        query = 'Yeah but what’s the RR? I should have a reply…'
@@ -192,7 +192,7 @@ class TestRegex(unittest.TestCase):
     def test_regex_match_quote_from_test_whats_the_rr_no_match(self):
        query = '"whats the Rr"'
        self.assertFalse(re.search(what_regex, query,
-                                 re.IGNORECASE), "Should be True")
+                                 re.IGNORECASE), "Should be False")
 
 
 if __name__ == '__main__':
