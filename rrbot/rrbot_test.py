@@ -194,6 +194,11 @@ class TestRegex(unittest.TestCase):
        self.assertFalse(re.search(what_regex, query,
                                  re.IGNORECASE), "Should be False")
 
+    def test_regex_match_wordy_no_match(self):
+       query = 'This is too much volume, try doing fewer but harder sets. Have a look at the recommended routine in the sidebar'
+
+       self.assertFalse(re.search(what_regex, query,
+                                 re.IGNORECASE), "Should be False")
 
 if __name__ == '__main__':
     unittest.main()
