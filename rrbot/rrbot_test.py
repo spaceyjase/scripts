@@ -200,5 +200,11 @@ class TestRegex(unittest.TestCase):
        self.assertFalse(re.search(what_regex, query,
                                  re.IGNORECASE), "Should be False")
 
+    def test_regex_match_thats_what_the_rr_false(self):
+       query = "That's what the RR, the Primer, the Wiki, and the FAQ are for."
+
+       self.assertFalse(re.search(what_regex, query,
+                                 re.IGNORECASE), "Should be False")
+
 if __name__ == '__main__':
     unittest.main()
